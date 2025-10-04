@@ -16,12 +16,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// 💡 НОВОЕ: Интерфейс для избежания 'any'
 interface Product {
-    _id: string;
-    name: string;
-    price: number;
-    stock: number;
+  _id: string;
+  name: string;
+  price: number;
+  stock: number;
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -41,6 +40,7 @@ export default function ProductsPage() {
   const router = useRouter();
   const { status } = useSession();
 
+  // Debouncing effect
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       setSearchQuery(input);
@@ -48,19 +48,21 @@ export default function ProductsPage() {
     return () => clearTimeout(delayDebounceFn);
   }, [input]);
 
+  // Reset page on search change
   useEffect(() => {
-    // 💡 ИСПРАВЛЕНИЕ (47:6): Добавление 'currentPage' в зависимости
-    if (currentPage !== 1) {
+    if (searchQuery && currentPage !== 1) {
       setCurrentPage(1);
     }
-  }, [searchQuery, currentPage]); 
+  }, [searchQuery]);
 
+  // Auth protection
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
 
+  // URL synchronization
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -85,13 +87,12 @@ export default function ProductsPage() {
     return <div className="p-6">Loading user data...</div>;
   }
 
-  if (error)
-    return <div className="p-6 text-red-600">Error loading data</div>;
+  if (error) return <div className="p-6 text-red-600">Error loading data</div>;
 
   const { products, totalProducts } = (data || {
     products: [],
     totalProducts: 0,
-  }) as { products: Product[], totalProducts: number };
+  }) as { products: Product[]; totalProducts: number };
 
   const totalPages = Math.ceil(totalProducts / 10);
 
@@ -106,7 +107,7 @@ export default function ProductsPage() {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm("Are you sure?"); 
+    const confirmDelete = window.confirm("Are you sure?");
     if (confirmDelete) {
       try {
         const response = await fetch(`/api/products/${id}`, {
@@ -141,7 +142,10 @@ export default function ProductsPage() {
             placeholder="Search..."
             className="p-2 border border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full sm:w-64 transition-all duration-150"
           />
-          <Button asChild className="w-full sm:w-auto flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 transition-colors rounded-lg">
+          <Button
+            asChild
+            className="w-full sm:w-auto flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 transition-colors rounded-lg"
+          >
             <Link href="/add-product">
               <PlusCircle className="w-4 h-4 mr-2" />
               Add
@@ -153,9 +157,25 @@ export default function ProductsPage() {
       <div className="bg-white p-2 md:p-6 rounded-xl shadow-lg mb-6">
         {isLoading ? (
           <div className="flex justify-center items-center h-40 text-gray-500 font-medium">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             Loading products...
           </div>
@@ -171,7 +191,9 @@ export default function ProductsPage() {
                 <Table className="min-w-full">
                   <TableHeader className="bg-gray-100">
                     <TableRow>
-                      <TableHead className="py-3 px-4 text-gray-600 font-semibold w-1/3">Name</TableHead>
+                      <TableHead className="py-3 px-4 text-gray-600 font-semibold w-1/3">
+                        Name
+                      </TableHead>
                       <TableHead className="py-3 px-4 w-1/6 text-center text-gray-600 font-semibold">
                         Price ($)
                       </TableHead>
@@ -185,7 +207,10 @@ export default function ProductsPage() {
                   </TableHeader>
                   <TableBody>
                     {products.map((product: Product) => (
-                      <TableRow key={product._id} className="hover:bg-gray-50 transition-colors border-b">
+                      <TableRow
+                        key={product._id}
+                        className="hover:bg-gray-50 transition-colors border-b"
+                      >
                         <TableCell className="font-medium py-3 px-4 text-gray-900 truncate">
                           {product.name}
                         </TableCell>
@@ -204,7 +229,10 @@ export default function ProductsPage() {
                             >
                               Delete
                             </Button>
-                            <Button asChild className="px-3 py-1.5 h-auto text-sm bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-md">
+                            <Button
+                              asChild
+                              className="px-3 py-1.5 h-auto text-sm bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-md"
+                            >
                               <Link href={`/products/edit/${product._id}`}>
                                 Edit
                               </Link>
@@ -220,35 +248,41 @@ export default function ProductsPage() {
 
             <div className="md:hidden space-y-3">
               {products.map((product: Product) => (
-                <div key={product._id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start mb-3">
-                        <span className="text-lg font-bold text-gray-900 pr-4 leading-tight">
-                            {product.name}
-                        </span>
-                        <span className="text-xl font-extrabold text-indigo-600 flex-shrink-0">
-                            ${product.price}
-                        </span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center text-sm text-gray-600 pt-2 mb-4 border-t border-gray-100">
-                        <span>Stock quantity:</span>
-                        <span className="font-semibold text-gray-800">{product.stock} pcs.</span>
-                    </div>
-                    
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            onClick={() => handleDelete(product._id)}
-                            variant="destructive"
-                            className="px-3 py-1 h-9 text-sm rounded-lg"
-                        >
-                            Delete
-                        </Button>
-                        <Button asChild className="px-3 py-1 h-9 text-sm bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-lg">
-                            <Link href={`/products/edit/${product._id}`}>
-                                Edit
-                            </Link>
-                        </Button>
-                    </div>
+                <div
+                  key={product._id}
+                  className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-lg font-bold text-gray-900 pr-4 leading-tight">
+                      {product.name}
+                    </span>
+                    <span className="text-xl font-extrabold text-indigo-600 flex-shrink-0">
+                      ${product.price}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center text-sm text-gray-600 pt-2 mb-4 border-t border-gray-100">
+                    <span>Stock quantity:</span>
+                    <span className="font-semibold text-gray-800">
+                      {product.stock} pcs.
+                    </span>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      onClick={() => handleDelete(product._id)}
+                      variant="destructive"
+                      className="px-3 py-1 h-9 text-sm rounded-lg"
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      asChild
+                      className="px-3 py-1 h-9 text-sm bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-lg"
+                    >
+                      <Link href={`/products/edit/${product._id}`}>Edit</Link>
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -258,7 +292,11 @@ export default function ProductsPage() {
 
       {products && products.length > 0 && (
         <div className="flex justify-between items-center flex-wrap gap-2 p-2 md:p-0">
-          <Button onClick={() => prevPage()} disabled={currentPage === 1} className="flex-shrink-0 rounded-lg bg-gray-700 hover:bg-gray-800">
+          <Button
+            onClick={() => prevPage()}
+            disabled={currentPage === 1}
+            className="flex-shrink-0 rounded-lg bg-gray-700 hover:bg-gray-800"
+          >
             Previous
           </Button>
 
@@ -269,7 +307,9 @@ export default function ProductsPage() {
                 onClick={() => setCurrentPage(number)}
                 variant={number === currentPage ? "default" : "outline"}
                 className={`w-9 h-9 text-sm flex-shrink-0 transition-colors rounded-full ${
-                    number === currentPage ? 'bg-indigo-600 hover:bg-indigo-700' : 'text-gray-600 border-gray-300 hover:bg-gray-100'
+                  number === currentPage
+                    ? "bg-indigo-600 hover:bg-indigo-700"
+                    : "text-gray-600 border-gray-300 hover:bg-gray-100"
                 }`}
               >
                 {number}
