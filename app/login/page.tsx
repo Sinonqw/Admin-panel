@@ -34,9 +34,9 @@ export default function LoginPage() {
     setIsSubmitting(false);
 
     if (result?.error) {
-      toast.error("Не удалось войти. Проверьте свои учетные данные.");
+      toast.error("Login failed. Check your credentials.");
     } else {
-      toast.success("Успешный вход!");
+      toast.success("Login successful!");
       router.push("/products");
     }
   };
@@ -45,7 +45,7 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Вход в Админ-панель</CardTitle>
+          <CardTitle className="text-2xl">Admin Panel Login</CardTitle>
           <p className="text-[12px] opacity-80">Email: demo@admin.com</p>
           <p className="text-[12px] opacity-80">Password: password123</p>
         </CardHeader>
@@ -64,7 +64,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="password">Пароль</label>
+              <label htmlFor="password">Password</label>
               <Input
                 id="password"
                 type="password"
@@ -81,10 +81,10 @@ export default function LoginPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Проверка...
+                  Authenticating...
                 </>
               ) : (
-                "Войти"
+                "Login"
               )}
             </Button>
           </CardFooter>

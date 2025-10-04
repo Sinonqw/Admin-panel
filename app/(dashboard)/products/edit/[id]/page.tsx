@@ -16,10 +16,14 @@ import { toast } from "sonner";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+interface Product {
+    name: string;
+    price: number;
+    stock: number;
+}
+
 export default function EditProductPage() {
   const params = useParams();
-  console.log(params);
-
   const productId = params.id as string;
   const router = useRouter();
 
@@ -27,7 +31,7 @@ export default function EditProductPage() {
     data: product,
     error,
     isLoading,
-  } = useSWR(`/api/products/${productId}`, fetcher);
+  } = useSWR<Product>(`/api/products/${productId}`, fetcher);
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -45,17 +49,17 @@ export default function EditProductPage() {
   if (error)
     return (
       <div className="text-red-500">
-        Ошибка: Не удалось загрузить данные товара.
+        Error: Failed to load product data.
       </div>
     );
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-40">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-        <span className="ml-3 text-lg">Загрузка данных товара...</span>
+        <span className="ml-3 text-lg">Loading product data...</span>
       </div>
     );
-  if (!product) return <div>Товар не найден.</div>;
+  if (!product) return <div>Product not found.</div>;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,15 +80,14 @@ export default function EditProductPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Ошибка: ${response.status}`);
+        throw new Error(errorData.error || `Error: ${response.status}`);
       }
 
-      console.log("Товар успешно обновлен!");
-      toast.success("товар успешно обновлен!")
+      toast.success("Product successfully updated!");
       router.push("/products");
     } catch (error) {
-      console.error("Не удалось обновить товар:", (error as Error).message);
-      toast.error("Не удалось обновить товар")
+      console.error("Failed to update product:", (error as Error).message);
+      toast.error("Failed to update product")
     } finally {
       setIsSaving(false);
     }
@@ -93,12 +96,12 @@ export default function EditProductPage() {
   return (
     <div>
       <h2 className="text-3xl font-bold tracking-tight mb-6">
-        Редактировать товар: {product.name}
+        Edit Product: {product.name}
       </h2>
 
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Обновить информацию</CardTitle>
+          <CardTitle>Update Information</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -107,11 +110,11 @@ export default function EditProductPage() {
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Название
+                Name
               </label>
               <Input
                 id="name"
-                placeholder="Введите название товара"
+                placeholder="Enter product name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -122,7 +125,7 @@ export default function EditProductPage() {
                 htmlFor="price"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Цена ($)
+                Price ($)
               </label>
               <Input
                 id="price"
@@ -138,7 +141,7 @@ export default function EditProductPage() {
                 htmlFor="stock"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Количество на складе
+                Stock Quantity
               </label>
               <Input
                 id="stock"
@@ -155,10 +158,10 @@ export default function EditProductPage() {
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Сохранение...
+                  Saving...
                 </>
               ) : (
-                "Сохранить изменения"
+                "Save Changes"
               )}
             </Button>
           </CardFooter>

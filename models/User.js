@@ -1,6 +1,5 @@
-// /models/User.js
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs"); 
+const bcrypt = require("bcryptjs");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -18,9 +17,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// Хук pre('save') для хеширования пароля
 UserSchema.pre("save", async function (next) {
-  // Выполняем хеширование, только если пароль был изменен
   if (!this.isModified("password")) {
     return next();
   }
@@ -35,4 +32,4 @@ UserSchema.pre("save", async function (next) {
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
-module.exports = User; // ✅ CommonJS export
+module.exports = User;

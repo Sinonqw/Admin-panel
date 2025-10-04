@@ -26,7 +26,7 @@ export default function AddProductPage() {
     setIsLoading(true);
 
     if (!name || !price || !stock) {
-      console.error("Пожалуйста, заполните все поля.");
+      console.error("Please fill in all fields.");
       setIsLoading(false);
       return;
     }
@@ -48,16 +48,16 @@ export default function AddProductPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Ошибка HTTP: ${response.status}`);
+        throw new Error(errorData.error || `HTTP Error: ${response.status}`);
       }
 
-      console.log("Товар успешно создан!");
-      toast.success("Товар успешно создан");
+      console.log("Product successfully created!");
+      toast.success("Product successfully created");
 
       router.push("/products");
     } catch (error) {
-      console.error("Не удалось создать товар:", (error as Error).message);
-      toast.error("Не удалось создать товар");
+      console.error("Failed to create product:", (error as Error).message);
+      toast.error("Failed to create product");
     } finally {
       setIsLoading(false);
     }
@@ -66,12 +66,12 @@ export default function AddProductPage() {
   return (
     <div>
       <h2 className="text-3xl font-bold tracking-tight mb-6">
-        Добавить новый товар
+        Add New Product
       </h2>
 
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Информация о товаре</CardTitle>
+          <CardTitle>Product Information</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4 mb-4">
@@ -80,11 +80,11 @@ export default function AddProductPage() {
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Название
+                Name
               </label>
               <Input
                 id="name"
-                placeholder="Введите название товара"
+                placeholder="Enter product name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -95,7 +95,7 @@ export default function AddProductPage() {
                 htmlFor="price"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Цена ($)
+                Price ($)
               </label>
               <Input
                 id="price"
@@ -111,7 +111,7 @@ export default function AddProductPage() {
                 htmlFor="stock"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Количество на складе
+                Stock Quantity
               </label>
               <Input
                 id="stock"
@@ -127,15 +127,15 @@ export default function AddProductPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading} // Блокировка во время отправки
+              disabled={isLoading}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Сохранение...
+                  Saving...
                 </>
               ) : (
-                "Сохранить товар"
+                "Save Product"
               )}
             </Button>
           </CardFooter>

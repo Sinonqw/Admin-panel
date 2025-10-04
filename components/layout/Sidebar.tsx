@@ -9,12 +9,12 @@ export function Sidebar() {
   const navItems = [
     {
       href: "/products",
-      label: "Товары",
+      label: "Products",
       icon: Package,
     },
     {
       href: "/add-product",
-      label: "Добавить товар",
+      label: "Add Product",
       icon: PlusCircle,
     },
   ];
