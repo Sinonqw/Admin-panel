@@ -3,7 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Package, PlusCircle, LayoutDashboard } from "lucide-react";
 
-// TODO: Обернуть в 'use client' для использования usePathname
 export function Sidebar() {
   const pathname = usePathname();
 
@@ -18,7 +17,6 @@ export function Sidebar() {
       label: "Добавить товар",
       icon: PlusCircle,
     },
-    // TODO: Добавить другие страницы
   ];
 
   return (
