@@ -16,6 +16,14 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+// 💡 НОВОЕ: Интерфейс для избежания 'any'
+interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    stock: number;
+}
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const getInitialPage = () => {
@@ -41,10 +49,11 @@ export default function ProductsPage() {
   }, [input]);
 
   useEffect(() => {
+    // 💡 ИСПРАВЛЕНИЕ (47:6): Добавление 'currentPage' в зависимости
     if (currentPage !== 1) {
       setCurrentPage(1);
     }
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]); 
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -79,10 +88,10 @@ export default function ProductsPage() {
   if (error)
     return <div className="p-6 text-red-600">Error loading data</div>;
 
-  const { products, totalProducts } = data || {
+  const { products, totalProducts } = (data || {
     products: [],
     totalProducts: 0,
-  };
+  }) as { products: Product[], totalProducts: number };
 
   const totalPages = Math.ceil(totalProducts / 10);
 
@@ -175,7 +184,7 @@ export default function ProductsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {products.map((product: any) => (
+                    {products.map((product: Product) => (
                       <TableRow key={product._id} className="hover:bg-gray-50 transition-colors border-b">
                         <TableCell className="font-medium py-3 px-4 text-gray-900 truncate">
                           {product.name}
@@ -210,7 +219,7 @@ export default function ProductsPage() {
             </div>
 
             <div className="md:hidden space-y-3">
-              {products.map((product: any) => (
+              {products.map((product: Product) => (
                 <div key={product._id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-3">
                         <span className="text-lg font-bold text-gray-900 pr-4 leading-tight">
